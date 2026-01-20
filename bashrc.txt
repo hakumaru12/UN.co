@@ -1,0 +1,4 @@
+# Auto start on boot (console)
+if [ -z "$SH_CONNECTION" ]; then
+        /home/haku12/Boot.sh
+fi
