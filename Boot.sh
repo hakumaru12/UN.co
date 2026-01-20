@@ -25,9 +25,9 @@ echo "=============================="
 
 echo "Starting streaming by momo"
 cd "$MOMO_DIR"
-if ! tmuc has-session -t momo 2>/dev/null; then
+if ! tmux has-session -t momo 2>/dev/null; then
 	tmux new-session -d -s momo "./momo --no-audio-device p2p"
 fi
 echo "Streaming started!"
-echo "Starting raspy.py (RC controll)"
+echo "Starting raspi.py (RC control)"
 python3 /home/haku12/raspi.py
