@@ -56,7 +56,7 @@ def set_esc_speed(throttle_percent, direction):
 def do_double_back():
     """ダブルバック操作を実行"""
     print("Setting back fase...")
-    set_esc_speed(10, -1)
+    set_esc_speed(1, -1)
     time.sleep(0.15)
     set_neutral()
     time.sleep(0.15)
