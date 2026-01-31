@@ -3,3 +3,10 @@ adafruit-circuitpython-motor
 RPi.GPIO
 websockets
 pygame
+PySimpleGUI
+pyinstaller
+pyvirtualdisplay
+Pillow
+pyvirtualdisplay
+Flask
+flask-socketio
