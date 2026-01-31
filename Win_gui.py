@@ -8,9 +8,30 @@ import json
 import os
 import traceback
 
-import pygame  # type: ignore
+# Import pygame lazily (some environments may not have it installed)
+# This prevents ModuleNotFoundError when running --preview or --nogui
 # Delay importing PySimpleGUI until after a virtual display is started (if needed)
 sg = None  # will be imported later in main() when a display is available
+
+
+def import_pygame_or_error(log_queue=None):
+    try:
+        import pygame  # type: ignore
+        return pygame
+    except ModuleNotFoundError:
+        msg = "ERROR: pygame is not installed. Install with: python -m pip install pygame"
+        if log_queue is not None:
+            log_queue.put(msg)
+        else:
+            print(msg)
+        return None
+    except Exception as e:
+        msg = f"ERROR importing pygame: {e}"
+        if log_queue is not None:
+            log_queue.put(msg)
+        else:
+            print(msg)
+        return None
 
 CONFIG_FILE = "controller_config.json"
 DEFAULT_CONFIG = {
@@ -79,6 +100,9 @@ def controller_thread(cfg, log_queue, stop_event, status=None):
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
+        pygame = import_pygame_or_error(log_queue)
+        if not pygame:
+            return
         pygame.init()
         pygame.joystick.init()
 
@@ -471,6 +495,11 @@ def main():
             if event == '-RESCAN-':
                 # attempt to re-scan connected joysticks
                 try:
+                    try:
+                        import pygame  # type: ignore
+                    except ModuleNotFoundError:
+                        append_log('Rescan failed: pygame is not installed. Install with: python -m pip install pygame')
+                        continue
                     pygame.joystick.quit()
                     pygame.joystick.init()
                     cnt = pygame.joystick.get_count()
