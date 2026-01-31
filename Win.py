@@ -29,10 +29,21 @@ BUTTON_DIRECTION_TOGGLE = 19  # Center button to toggle Forward/Reverse
 def init_controller():
     pygame.init()
     pygame.joystick.init()
-    
-    if pygame.joystick.get_count() == 0:
-        raise Exception("GT Force Pro is not connected")
-    
+
+    # If no joystick is present, allow the user to retry or quit instead of raising an exception
+    while pygame.joystick.get_count() == 0:
+        print("GT Force Pro is not connected.")
+        print("Connect the controller and press Enter to retry, or type 'q' then Enter to quit.")
+        try:
+            resp = input().strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            raise SystemExit("No controller connected. Exiting.")
+        if resp == 'q':
+            raise SystemExit("No controller connected. Exiting.")
+        # Reinitialize joystick subsystem and try again
+        pygame.joystick.quit()
+        pygame.joystick.init()
+
     joystick = pygame.joystick.Joystick(0)
     joystick.init()
     print(f"Controller name: {joystick.get_name()}")
