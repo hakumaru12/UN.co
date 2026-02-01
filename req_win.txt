@@ -1,0 +1,12 @@
+# Requirements for building/running `Win.py` on Windows
+# Use this file when preparing a Windows environment to build the console exe
+# Install with: python -m pip install -r req_win.txt
+
+pygame==2.6.1
+pyinstaller==6.18.0
+
+# Optional (only if you plan to use the GUI or additional features):
+# PySimpleGUI
+# Pillow
+# Flask
+# flask-socketio
