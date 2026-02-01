@@ -1,105 +1,107 @@
-# Steer-RC - Windows controller helper (GUI)
+# Steer-RC 🛠️
 
-このリポジトリには Windows 側でジョイスティック入力を読み取り、UDP で Raspberry Pi に送信するツールが含まれます。
-
-## 実行方法 ✅
-
-1. Python 環境を用意して依存パッケージをインストールします:
-
-   ```bash
-   pip install -r req.txt
-   ```
-
-2. GUI を起動します (Windows で実行することを想定しています):
-
-   ```bash
-   python Win_gui.py
-   ```
-
-   - スタート前に IP/ポートやレンジ、ボタン割り当てを GUI 上で調整できます。
-   - エラーが発生すると画面にポップアップとログが表示されます。
-
-   ※ ヘッドレス/テスト環境では GUI を使わずに実行することもできます:
-
-   ```bash
-   python Win_gui.py --nogui
-   ```
-   - `--nogui` モードではコンソールにログが出力され、ジョイスティックが接続されていれば同様にデータ送信を行います。
-
-   - ヘッドレス環境で GUI の見た目だけ確認したいときは静的プレビューを出力できます（ファイル: `ui_preview.html`）:
-
-   ```bash
-   python Win_gui.py --preview
-   ```
-
-   - また、仮想ディスプレイ (Xvfb) と Pillow が利用できる場合は GUI を起動してスクリーンショットを保存できます:
-
-   ```bash
-   python Win_gui.py --screenshot
-   ```
-   - 生成されるファイル: `ui_screenshot.png`（成功すれば出力されますが、環境によっては追加パッケージが必要です）
-
-## .exe にビルドする方法 (PyInstaller) 🔧
-
-- ローカルで Windows 実機からビルドする場合 (PowerShell):
-
-  ```powershell
-  .\build_windows.ps1
-  ```
-
-  または手動で:
-
-  ```powershell
-  python -m pip install --upgrade pip
-  python -m pip install -r req.txt
-  python -m pip install pyinstaller
-  pyinstaller --onefile --windowed --name SteerRC Win_gui.py
-  ```
-
-- 生成物は `dist\SteerRC.exe` になります。
-
-- GitHub Actions を使って自動ビルドすることもできます（Windows runner でビルドしてアーティファクトをダウンロードできます）。
-
-  - ワークフロー: `.github/workflows/build-windows.yml` を用意済みです。`Actions` → `Build Windows exe` から手動実行 (workflow_dispatch) するか、main ブランチへの push によって自動でビルドされます。
-  - ビルド後、`SteerRC-windows-exe` アーティファクトをダウンロードして実行してください。
-
-- 注意: `pygame` のネイティブ部分などは Windows の環境に依存するため、**ビルドは Windows 環境で行ってください**（GitHub Actions の Windows runner も利用可能です）。
-
-## 変更の永続化
-
-- GUI で保存ボタンを押すと `controller_config.json` に設定が保存されます。
-
-## トラブルシューティング ⚠️
-
-- ジョイスティックが見つからない場合: 接続とドライバ、他のアプリでの排他使用を確認してください。
-- エラーは GUI のログ領域とポップアップで確認できます。
-- PySimpleGUI のインストールに関する警告やテーマ API が見つからないエラーが出る場合は、以下の手順で再インストールしてください（特に該当メッセージが出る環境向け）:
-
-  ```bash
-  python -m pip uninstall PySimpleGUI
-  python -m pip cache purge
-  python -m pip install --upgrade --extra-index-url https://PySimpleGUI.net/install PySimpleGUI
-  ```
-  または明示的に再インストールする場合:
-  ```bash
-  python -m pip install --force-reinstall --extra-index-url https://PySimpleGUI.net/install PySimpleGUI
-  ```
-
-  ※ macOS / Linux の場合は `python3 -m pip` を使用してください。
-
-- Headless（表示のない Linux）環境で GUI を表示したい場合
-
-  - 推奨方法（システム側に Xvfb を入れて pyvirtualdisplay を使う）:
-    ```bash
-    sudo apt-get update && sudo apt-get install -y xvfb
-    python3 -m pip install pyvirtualdisplay
-    python3 Win_gui.py
-    ```
-  - あるいは単発で xvfb を使って起動する:
-    ```bash
-    xvfb-run python3 Win_gui.py
-    ```
-  - これが無い場合は `Win_gui.py` は自動でヘッドレス（--nogui と同等）にフォールバックしてコンソールログのみを出力します。
+**Windows 側でジョイスティック入力を読み取り、UDP で Raspberry Pi に送信して車両を制御するプロジェクト**です。
 
 ---
+
+## 🔎 概要
+
+- `Win.py` — Windows 上でジョイスティックを読み取り、UDP で制御データを送るコンソール向け送信クライアントです。
+- `raspi.py` — Raspberry Pi 側の受信プログラム。`adafruit_pca9685` を使ってサーボ/ESC を制御します。
+- ビルド・配布用のスクリプト（`build_win_exe.bat`, `build_win_exe.ps1`, `build_windows.ps1`）と PyInstaller の `win.spec` を含みます。
+
+> 以前の README にあった GUI（`Win_gui.py`）はこのリポジトリには含まれていません。GUI の静的プレビューは `ui_preview.html` を参照してください。
+
+---
+
+## ✅ 必要な依存関係
+
+- 共通（Raspberry Pi 向け含む）: see `req.txt`
+  - adafruit-circuitpython-pca9685
+  - adafruit-circuitpython-motor
+  - RPi.GPIO (Linux のみ)
+  - websockets
+  - pygame
+  - PySimpleGUI
+  - pyinstaller
+  - pyvirtualdisplay
+  - Pillow
+  - Flask
+  - flask-socketio
+
+- Windows 実行/ビルド用: `req_win.txt`（例: `pygame`, `pyinstaller`）
+
+インストール例:
+```bash
+python -m pip install -r req.txt
+# Windows でビルド環境を用意する場合:
+python -m pip install -r req_win.txt
+```
+
+---
+
+## ⚙️ 使い方（簡単）
+
+### Windows (送信側)
+- コンソール版の起動:
+```bash
+python Win.py [--ip <RPI_IP>] [--port <PORT>] [--no-interactive]
+```
+- 重要なオプション:
+  - `--ip` : 送信先 Raspberry Pi の IP（省略時は `192.168.11.2`）
+  - `--port` : UDP ポート（省略時は `5005`）
+  - `--no-interactive` : 対話的プロンプトをスキップしてデフォルトを使用します
+
+- ボタン操作・挙動:
+  - ステアリング: アナログ軸（axis 0）
+  - スロットル: axis 1（負方向がアクセル）
+  - ブレーキ: axis 2
+  - スロットル調整ボタン（例: paddles）でレンジを上下できます（`Win.py` 内の定数を参照）
+  - 方向切替用ボタンで前進/後退を切り替えます
+
+### Raspberry Pi (受信側)
+```bash
+python raspi.py
+```
+- `raspi.py` は UDP を受け取り、`adafruit_pca9685` を介してサーボと ESC を制御します。I2C (SCL/SDA) と ESC/サーボ の配線を正しく行ってから起動してください。
+- 注意: `adafruit-circuitpython-*` 系は Raspberry Pi 環境での実行を想定しています。
+
+---
+
+## 🔧 ビルド (.exe) とリリース
+
+- Windows 上でローカルビルドを行うには `build_win_exe.ps1`（PowerShell）または `build_win_exe.bat` を使用します。
+- PyInstaller を使った onefile ビルド結果は `dist\` に出力されます。
+- CI（GitHub Actions）で Windows ランナーを使って自動ビルドするワークフローがあればアーティファクトをダウンロードできます（`BUILD_EXE.md` を参照）。
+
+---
+
+## 🩺 トラブルシューティング
+
+- ジョイスティックが検出されない場合: 接続/ドライバ/他アプリの排他を確認してください。
+- Raspberry Pi で I2C デバイスが見えない場合: `i2cdetect` や配線を確認し、`RPi.GPIO` のインストールと有効化を行ってください。
+- ビルド時に pygame のネイティブモジュールが落ちる場合は Windows 実機でビルドしてください。
+
+---
+
+## 📁 リポジトリ内の主なファイル
+
+- `Win.py` — 送信クライアント（コンソール）
+- `raspi.py` — 受信・モータ/サーボ制御
+- `req.txt`, `req_win.txt` — 依存パッケージ
+- `build_win_exe.bat`, `build_win_exe.ps1`, `build_windows.ps1` — ビルド補助スクリプト
+- `win.spec` — PyInstaller spec
+- `ui_preview.html` — GUI の静的プレビュー（GUI 本体は未収録）
+- `BUILD_EXE.md`, `memo.txt` — ドキュメント/メモ
+
+---
+
+## 貢献・問い合わせ
+
+プルリク歓迎です。Issue を立ててください。
+
+---
+
+*更新日時*: 2026-02-01
+
 
