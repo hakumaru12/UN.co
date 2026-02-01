@@ -57,6 +57,11 @@ def init_controller():
     joystick.init()
     print(f"Controller name: {joystick.get_name()}")
     print(f"Number of buttons: {joystick.get_numbuttons()}")
+    try:
+        print(f"Number of axes: {joystick.get_numaxes()}")
+    except Exception:
+        # Some backends may not implement get_numaxes reliably
+        pass
     return joystick
 
 def map_range(value, in_min, in_max, out_min, out_max):
@@ -71,6 +76,16 @@ def apply_deadzone(value, deadzone=0.02):
     if abs(value) < deadzone:
         return 0
     return value
+
+def get_axis_safe(joystick, idx):
+    """Safely read joystick axis. Returns 0.0 when axis is not present or on error."""
+    try:
+        if joystick.get_numaxes() <= idx:
+            return 0.0
+        return joystick.get_axis(idx)
+    except pygame.error as e:
+        print(f"Axis read error (axis {idx}): {e}")
+        return 0.0
 
 def main():
     global Throttle_range, Brake_range, UDP_IP, UDP_PORT
@@ -156,9 +171,9 @@ def main():
                         Throttle_range = max(Throttle_range - THROTTLE_STEP, THROTTLE_MIN)
                         print(f"▼ Throttle range: {Throttle_range}%")
             
-            steering = joystick.get_axis(0)
-            raw_throttle = -joystick.get_axis(1)
-            raw_brake = -joystick.get_axis(2)
+            steering = get_axis_safe(joystick, 0)
+            raw_throttle = -get_axis_safe(joystick, 1)
+            raw_brake = -get_axis_safe(joystick, 2)
             
             print(f"Raw throttle value: {raw_throttle:.3f}, Raw brake value: {raw_brake:.3f}")
             
