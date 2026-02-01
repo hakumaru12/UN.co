@@ -24,5 +24,13 @@
 補足（デバッグ）
 - 実行時に pygame がコントローラを見つけられないと例外を出します。exe をコマンドプロンプトから起動するとログが見やすいです。
 
+CI（GitHub Actions）でのビルド
+- このリポジトリには Windows ランナーで `.exe` を自動ビルドする workflow が追加されています: `.github/workflows/build-windows.yml`
+- ワークフローは `push`（`main`）と手動トリガ（`workflow_dispatch`）で動作し、`Win_gui`（GUI版）と `Win`（コンソール版）をビルドして成果物（artifact）としてアップロードします。
+- ワークフローを手動で実行するには GitHub の Actions タブで `Build Windows exe` ワークフローを選び `Run workflow` を押してください。ビルド後に `Artifacts` から `Win-windows-exe` をダウンロードできます。
+
+ローカル Windows でのビルド補助
+- `build_win_exe.bat`（既存）または `build_win_exe.ps1`（PowerShell 補助）を使って手元の Windows でビルドできます。`build_win_exe.ps1` は依存のインストールと spec ベースのフォールバックを含みます。
+
 ---
 もう手元で試してほしい点があれば教えてください（例: アイコン追加、onefile/onedir の変更、UPX の有効化など）。

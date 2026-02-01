@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.12'
 
     - name: Cache pip
       uses: actions/cache@v4
@@ -32,12 +32,28 @@ jobs:
         pip install -r req.txt
         pip install pyinstaller
 
-    - name: Build EXE with PyInstaller
+    - name: Build SteerRC (GUI) EXE with PyInstaller
       run: |
         pyinstaller --noconfirm --onefile --windowed --name SteerRC Win_gui.py
 
-    - name: Upload exe
+    - name: Upload SteerRC exe
       uses: actions/upload-artifact@v4
       with:
         name: SteerRC-windows-exe
         path: dist/SteerRC.exe
+
+    - name: Build Win (console) EXE with PyInstaller
+      run: |
+        pyinstaller --clean --noconfirm --onefile --name Win --console Win.py || pyinstaller --clean --noconfirm win.spec
+
+    - name: Show dist directory
+      run: dir .\dist
+
+    - name: Upload Win exe
+      uses: actions/upload-artifact@v4
+      with:
+        name: Win-windows-exe
+        path: |
+          dist\Win.exe
+          dist\Win\Win.exe
+          dist\**\Win.exe

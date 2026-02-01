@@ -4,6 +4,14 @@ import socket
 import struct
 import time
 import ipaddress
+import argparse
+
+# Command-line arguments
+parser = argparse.ArgumentParser(description="GT Force Pro UDP sender")
+parser.add_argument("--ip", help="UDP destination IP", default=None)
+parser.add_argument("--port", type=int, help="UDP destination port", default=None)
+parser.add_argument("--no-interactive", action="store_true", help="Skip prompts and use defaults or provided values")
+args = parser.parse_args()
 
 UDP_IP = "192.168.11.2"  # Raspberry Pi IP address
 UDP_PORT = 5005
@@ -67,24 +75,47 @@ def apply_deadzone(value, deadzone=0.02):
 def main():
     global Throttle_range, Brake_range, UDP_IP, UDP_PORT
 
-    # Prompt for UDP destination (press Enter to accept defaults)
+    # Handle command-line arguments (see --ip/--port). If provided, use them; else prompt interactively.
     try:
-        ip_in = input(f"UDP IP [{UDP_IP}]: ").strip()
-        if ip_in:
+        # IP from CLI
+        if args.ip:
             try:
-                ipaddress.ip_address(ip_in)
-                UDP_IP = ip_in
+                ipaddress.ip_address(args.ip)
+                UDP_IP = args.ip
             except ValueError:
-                print(f"Invalid IP '{ip_in}', using default {UDP_IP}")
-        port_in = input(f"UDP Port [{UDP_PORT}]: ").strip()
-        if port_in:
+                print(f"Invalid IP '{args.ip}', using default {UDP_IP}")
+        elif args.no_interactive:
+            print(f"Using default UDP IP: {UDP_IP}")
+        else:
+            ip_in = input(f"UDP IP [{UDP_IP}]: ").strip()
+            if ip_in:
+                try:
+                    ipaddress.ip_address(ip_in)
+                    UDP_IP = ip_in
+                except ValueError:
+                    print(f"Invalid IP '{ip_in}', using default {UDP_IP}")
+
+        # Port from CLI
+        if args.port is not None:
             try:
-                p = int(port_in)
+                p = int(args.port)
                 if not (1 <= p <= 65535):
                     raise ValueError()
                 UDP_PORT = p
             except Exception:
-                print(f"Invalid port '{port_in}', using default {UDP_PORT}")
+                print(f"Invalid port '{args.port}', using default {UDP_PORT}")
+        elif args.no_interactive:
+            print(f"Using default UDP Port: {UDP_PORT}")
+        else:
+            port_in = input(f"UDP Port [{UDP_PORT}]: ").strip()
+            if port_in:
+                try:
+                    p = int(port_in)
+                    if not (1 <= p <= 65535):
+                        raise ValueError()
+                    UDP_PORT = p
+                except Exception:
+                    print(f"Invalid port '{port_in}', using default {UDP_PORT}")
     except KeyboardInterrupt:
         print('\nInterrupted by user. Exiting.')
         return

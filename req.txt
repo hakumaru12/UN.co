@@ -1,12 +1,11 @@
 adafruit-circuitpython-pca9685
 adafruit-circuitpython-motor
-RPi.GPIO
+RPi.GPIO; sys_platform == "linux"
 websockets
 pygame
 PySimpleGUI
 pyinstaller
 pyvirtualdisplay
 Pillow
-pyvirtualdisplay
 Flask
 flask-socketio
