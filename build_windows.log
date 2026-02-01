@@ -1,0 +1,31 @@
+発生場所 C:\Users\robot\Documents\GitHub\Steer-RC-Private\build_windows.ps1:7 文字:104
++ ... bject { $_ -and -not ($_.Trim() -like "*sys_platform ==*\"linux\"") }
++                                                               ~~~~~~~~
+式またはステートメントのトークン 'linux\""' を使用できません。
+発生場所 C:\Users\robot\Documents\GitHub\Steer-RC-Private\build_windows.ps1:7 文字:104
++ ... e-Object { $_ -and -not ($_.Trim() -like "*sys_platform ==*\"linux\"" ...
++                                                                  ~
+式の終わりの ')' が存在しません。
+発生場所 C:\Users\robot\Documents\GitHub\Steer-RC-Private\build_windows.ps1:7 文字:52
++     $filtered = Get-Content req.txt | Where-Object { $_ -and -not ($_ ...
++                                                    ~
+ステートメント ブロックまたは型定義に終わりの '}' が存在しません。
+発生場所 C:\Users\robot\Documents\GitHub\Steer-RC-Private\build_windows.ps1:5 文字:24
++ if (Test-Path req.txt) {
++                        ~
+ステートメント ブロックまたは型定義に終わりの '}' が存在しません。
+発生場所 C:\Users\robot\Documents\GitHub\Steer-RC-Private\build_windows.ps1:7 文字:112
++ ... bject { $_ -and -not ($_.Trim() -like "*sys_platform ==*\"linux\"") }
++                                                                       ~
+式またはステートメントのトークン ')' を使用できません。
+発生場所 C:\Users\robot\Documents\GitHub\Steer-RC-Private\build_windows.ps1:7 文字:114
++ ... bject { $_ -and -not ($_.Trim() -like "*sys_platform ==*\"linux\"") }
++                                                                         ~
+式またはステートメントのトークン '}' を使用できません。
+発生場所 C:\Users\robot\Documents\GitHub\Steer-RC-Private\build_windows.ps1:12 文字:1
++ } else {
++ ~
+式またはステートメントのトークン '}' を使用できません。
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : UnexpectedToken
+ 
