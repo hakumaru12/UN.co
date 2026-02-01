@@ -13,7 +13,8 @@ python -m pip install --upgrade pip
 # On Windows, skip Linux-only packages (like RPi.GPIO) when installing requirements
 if (Test-Path req.txt) {
     Write-Host "Filtering req.txt for this platform..."
-    $filtered = Get-Content req.txt | Where-Object { $_ -and -not ($_.Trim() -like "*sys_platform ==*\"linux\"") }
+    # Use regex match to avoid nested-quote parsing issues
+    $filtered = Get-Content req.txt | Where-Object { $_ -and -not ($_.Trim() -match 'sys_platform\s*==\s"linux"') }
     $tmp = "$PWD\req-windows.txt"
     $filtered | Set-Content -Path $tmp -Encoding UTF8
     python -m pip install -r $tmp
