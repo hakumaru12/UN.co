@@ -32,7 +32,7 @@ BUTTON_THROTTLE_UP = 4    # Right paddle (throttle up)
 BUTTON_THROTTLE_DOWN = 5  # Left paddle (throttle down)
 
 # Direction toggle button (steering center button)
-BUTTON_DIRECTION_TOGGLE = 19  # Center button to toggle Forward/Reverse
+BUTTON_DIRECTION_TOGGLE = 12  # Center button to toggle Forward/Reverse
 
 
 def init_controller():
